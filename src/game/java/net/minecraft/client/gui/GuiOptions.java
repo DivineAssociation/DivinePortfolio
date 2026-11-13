@@ -88,7 +88,7 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback {
 			++i;
 		}
 
-		if (this.mc.theWorld != null) {
+		/*if (this.mc.theWorld != null) {
 			EnumDifficulty enumdifficulty = this.mc.theWorld.getDifficulty();
 			this.field_175357_i = new GuiButton(108, this.width / 2 - 155 + i % 2 * 160,
 					this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.func_175355_a(enumdifficulty));
@@ -105,33 +105,33 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback {
 			} else {
 				this.field_175357_i.enabled = false;
 			}
-		}
+		}*/
 
-		this.buttonList.add(new GuiButton(110, this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20,
-				I18n.format("options.skinCustomisation", new Object[0])));
-		this.buttonList.add(new GuiButton(8675309, this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20,
-				I18n.format("shaders.gui.optionsButton")));
-		this.buttonList.add(new GuiButton(106, this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20,
-				I18n.format("options.sounds", new Object[0])));
-		boolean support = ScreenRecordingController.isSupported();
+		/*this.buttonList.add(new GuiButton(110, this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20,
+				I18n.format("options.skinCustomisation", new Object[0])));*/
+		/*this.buttonList.add(new GuiButton(8675309, this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20,
+				I18n.format("shaders.gui.optionsButton")));*/
+		/*this.buttonList.add(new GuiButton(106, this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20,
+				I18n.format("options.sounds", new Object[0])));*/
+		/*boolean support = ScreenRecordingController.isSupported();
 		this.buttonList.add(broadcastSettings = new GuiButton(107, this.width / 2 + 5, this.height / 6 + 72 - 6, 150,
 				20, I18n.format(support ? "options.screenRecording.button" : "options.screenRecording.unsupported")));
-		broadcastSettings.enabled = support;
-		this.buttonList.add(new GuiButton(101, this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20,
-				I18n.format("options.video", new Object[0])));
+		broadcastSettings.enabled = support;*/
+		/*this.buttonList.add(new GuiButton(101, this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20,
+				I18n.format("options.video", new Object[0])));*/
 		this.buttonList.add(new GuiButton(100, this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20,
 				I18n.format("options.controls", new Object[0])));
-		this.buttonList.add(new GuiButton(102, this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20,
-				I18n.format("options.language", new Object[0])));
-		this.buttonList.add(new GuiButton(103, this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20,
-				I18n.format("options.chat.title", new Object[0])));
-		GuiButton btn;
-		this.buttonList.add(btn = new GuiButton(105, this.width / 2 - 155, this.height / 6 + 144 - 6, 150, 20,
+		/*this.buttonList.add(new GuiButton(102, this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20,
+				I18n.format("options.language", new Object[0])));*/
+		/*this.buttonList.add(new GuiButton(103, this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20,
+				I18n.format("options.chat.title", new Object[0])));*/
+		//GuiButton btn;
+		/*this.buttonList.add(btn = new GuiButton(105, this.width / 2 - 155, this.height / 6 + 144 - 6, 150, 20,
 				I18n.format("options.resourcepack", new Object[0])));
-		btn.enabled = EaglerFolderResourcePack.isSupported();
-		this.buttonList.add(btn = new GuiButton(104, this.width / 2 + 5, this.height / 6 + 144 - 6, 150, 20,
+		btn.enabled = EaglerFolderResourcePack.isSupported();*/
+		/*this.buttonList.add(btn = new GuiButton(104, this.width / 2 + 5, this.height / 6 + 144 - 6, 150, 20,
 				I18n.format("options.debugConsoleButton", new Object[0])));
-		btn.enabled = EagRuntime.getPlatformType() != EnumPlatformType.DESKTOP;
+		btn.enabled = EagRuntime.getPlatformType() != EnumPlatformType.DESKTOP;*/
 		this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 168,
 				I18n.format("gui.done", new Object[0])));
 	}

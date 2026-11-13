@@ -267,22 +267,22 @@ eaglercraft.command.skull.error.invalid.skin=Image with size %dx%d is not a vali
 
 eaglercraft.command.clientStub=This command is client side!
 
-menu.game=Game menu
-menu.singleplayer=Singleplayer
+menu.game=Game paused
+menu.singleplayer=Start
 menu.multiplayer=Multiplayer
 menu.online=Minecraft Realms
 menu.options=Options...
 menu.quit=Quit Game
-menu.returnToMenu=Save and Quit to Title
+menu.returnToMenu=Exit
 menu.disconnect=Disconnect
-menu.returnToGame=Back to Game
+menu.returnToGame=Resume
 menu.switchingLevel=Switching worlds
 menu.generatingLevel=Generating world
 menu.loadingLevel=Loading world
 menu.generatingTerrain=Building terrain
 menu.convertingLevel=Converting world
 menu.simulating=Simulating the world for a bit
-menu.respawning=Respawning
+menu.respawning=Reincarnating
 menu.shareToLan=Open to LAN
 
 selectWorld.title=Select World
@@ -1097,6 +1097,8 @@ options.stream.chat.userFilter=User Filter
 options.stream.chat.userFilter.all=All Viewers
 options.stream.chat.userFilter.subs=Subscribers
 options.stream.chat.userFilter.mods=Moderators
+
+options.reset=Reset
 
 difficulty.lock.title=Lock World Difficulty
 difficulty.lock.question=Are you sure you want to lock the difficulty of this world? This will set this world to always be %1$s, and you will never be able to change that again.
@@ -1914,15 +1916,15 @@ death.attack.thorns=%1$s was killed trying to hurt %2$s
 death.attack.fall=%1$s hit the ground too hard
 death.attack.outOfWorld=%1$s fell out of the world
 
-deathScreen.respawn=Respawn
+deathScreen.respawn=Reincarnate
 deathScreen.deleteWorld=Delete world
-deathScreen.titleScreen=Title screen
-deathScreen.score=Score
+deathScreen.titleScreen=Rage quit
+deathScreen.skillIssue=Skill Issue
 deathScreen.title.hardcore=Game over!
 deathScreen.hardcoreInfo=You cannot respawn in hardcore mode!
 deathScreen.title=You died!
 deathScreen.leaveServer=Leave server
-deathScreen.quit.confirm=Are you sure you want to quit?
+deathScreen.quit.confirm=Are you sure you want to rage quit?
 
 potion.effects.whenDrank=When Applied:
 potion.empty=No Effects

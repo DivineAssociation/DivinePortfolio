@@ -130,8 +130,7 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback {
 					this.width / 2, 144, 16777215);
 		}
 
-		this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.score", new Object[0]) + ": "
-				+ EnumChatFormatting.YELLOW + this.mc.thePlayer.getScore(), this.width / 2, 100, 16777215);
+		this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.skillIssue", new Object[0]), this.width / 2, 100, 16777215);
 		super.drawScreen(i, j, f);
 	}
 
