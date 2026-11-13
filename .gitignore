@@ -10,7 +10,11 @@ bin
 /desktopRuntime/hs_err_*
 /desktopRuntime/crash-reports/*
 /desktopRuntime/options.txt
-/desktopRuntime/_eagstorage*
 /desktopRuntime/filesystem/*
 /desktopRuntime/downloads/*
 /desktopRuntime/screenshots/*
+.idea/
+*.iml
+build/
+classes.js
+classes.wasm

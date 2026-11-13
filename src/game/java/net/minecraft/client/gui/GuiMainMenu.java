@@ -115,7 +115,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 	private static ResourceLocation backgroundTexture2 = null;
 	private GuiUpdateCheckerOverlay updateCheckerOverlay;
 	private GuiButton downloadOfflineButton;
-	private boolean enableBlur = true;
+	private boolean enableBlur = false;
 	private boolean shouldReload = false;
 
 	private static GuiMainMenu instance = null;
@@ -280,18 +280,21 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 			i += 11;
 		}
 
-		if (this.mc.isDemo()) {
+		/*if (this.mc.isDemo()) {
 			this.addDemoButtons(i, 24);
 		} else {
 			this.addSingleplayerMultiplayerButtons(i, 24);
-		}
+		}*/
+		this.addSingleplayerMultiplayerButtons(i, 24);
 
-		this.buttonList.add(new GuiButton(0, this.width / 2 - 100, i + 72 + 12, 98, 20,
-				I18n.format("menu.options", new Object[0])));
-		this.buttonList.add(new GuiButton(4, this.width / 2 + 2, i + 72 + 12, 98, 20,
-				I18n.format("menu.editProfile", new Object[0])));
+		/*this.buttonList.add(new GuiButton(0, this.width / 2 - 100, i + 72 + 12, 98, 20,
+				I18n.format("menu.options", new Object[0])));*/
+		/*this.buttonList.add(new GuiButton(4, this.width / 2 + 2, i + 72 + 12, 98, 20,
+				I18n.format("menu.editProfile", new Object[0])));*/
 
-		this.buttonList.add(new GuiButtonLanguage(5, this.width / 2 - 124, i + 72 + 12));
+		//this.buttonList.add(new GuiButtonLanguage(5, this.width / 2 - 124, i + 72 + 12));
+
+		this.buttonList.add(new GuiButton(16, this.width / 2 - 60, i + 72 + 12, 120, 20, I18n.format("menu.viewSourceCode")));
 
 		if (isFork) {
 			this.openGLWarning1 = EaglercraftVersion.mainMenuStringE;
@@ -316,9 +319,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 	private void addSingleplayerMultiplayerButtons(int parInt1, int parInt2) {
 		this.buttonList
 				.add(new GuiButton(1, this.width / 2 - 100, parInt1, I18n.format("menu.singleplayer", new Object[0])));
-		this.buttonList.add(new GuiButton(2, this.width / 2 - 100, parInt1 + parInt2 * 1,
-				I18n.format("menu.multiplayer", new Object[0])));
-		if (EaglercraftVersion.mainMenuEnableGithubButton) {
+		/*this.buttonList.add(new GuiButton(2, this.width / 2 - 100, parInt1 + parInt2 * 1,
+				I18n.format("menu.multiplayer", new Object[0])));*/
+		/*if (EaglercraftVersion.mainMenuEnableGithubButton) {
 			this.buttonList.add(
 					new GuiButton(14, this.width / 2 - 100, parInt1 + parInt2 * 2, I18n.format("menu.forkOnGitlab")));
 		} else {
@@ -330,7 +333,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 						parInt1 + parInt2 * 2, I18n.format("update.downloadOffline")));
 				downloadOfflineButton.enabled = !UpdateService.shouldDisableDownloadButton();
 			}
-		}
+		}*/
 	}
 
 	/**+
@@ -392,6 +395,10 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 					UpdateService.quine();
 				}
 			}
+		}
+
+		if (parGuiButton.id == 16) {
+			EagRuntime.openLink(EaglercraftVersion.projectForkURL);
 		}
 	}
 
@@ -655,9 +662,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 		GlStateManager.popMatrix();
 
 		String s = EaglercraftVersion.mainMenuStringA;
-		if (this.mc.isDemo()) {
+		/*if (this.mc.isDemo()) {
 			s += " Demo";
-		}
+		}*/
 		this.drawString(this.fontRendererObj, s, 2, this.height - 20, -1);
 		s = EaglercraftVersion.mainMenuStringB;
 		this.drawString(this.fontRendererObj, s, 2, this.height - 10, -1);
@@ -666,13 +673,13 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 		this.drawString(this.fontRendererObj, s1, this.width - this.fontRendererObj.getStringWidth(s1) - 2,
 				this.height - 20, -1);
 		s1 = EaglercraftVersion.mainMenuStringD;
-		if (this.mc.isDemo()) {
+		/*if (this.mc.isDemo()) {
 			s1 = "Copyright Mojang AB. Do not distribute!";
-		}
+		}*/
 		this.drawString(this.fontRendererObj, s1, this.width - this.fontRendererObj.getStringWidth(s1) - 2,
 				this.height - 10, -1);
 
-		if (!this.mc.isDemo()) {
+		/*if (!this.mc.isDemo()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(0.75f, 0.75f, 0.75f);
 			int www = 0;
@@ -720,9 +727,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 						16);
 			}
 			GlStateManager.popMatrix();
-		}
+		}*/
 
-		String lbl = "CREDITS.txt";
+		String lbl = "Credits";
 		int w = fontRendererObj.getStringWidth(lbl) * 3 / 4;
 
 		if (i >= (this.width - w - 4) && i <= this.width && j >= 0 && j <= 9) {
@@ -748,7 +755,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 	 */
 	protected void mouseClicked(int par1, int par2, int par3) {
 		if (par3 == 0) {
-			String lbl = "CREDITS.txt";
+			String lbl = "Credits";
 			int w = fontRendererObj.getStringWidth(lbl) * 3 / 4;
 			if (par1 >= (this.width - w - 4) && par1 <= this.width && par2 >= 0 && par2 <= 10) {
 				String resStr = EagRuntime.getResourceString("/assets/eagler/CREDITS.txt");

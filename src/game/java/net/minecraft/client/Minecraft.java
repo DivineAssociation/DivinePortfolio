@@ -528,27 +528,29 @@ public class Minecraft implements IThreadListener {
 			mainMenu = new GuiConnecting(mainMenu, this, this.serverName, this.serverPort);
 		}
 
-		mainMenu = new GuiScreenEditProfile(mainMenu);
+		//mainMenu = new GuiScreenEditProfile(mainMenu);
 
-		if (!EagRuntime.getConfiguration().isForceProfanityFilter() && !gameSettings.hasShownProfanityFilter) {
+		/*if (!EagRuntime.getConfiguration().isForceProfanityFilter() && !gameSettings.hasShownProfanityFilter) {
 			mainMenu = new GuiScreenContentWarning(mainMenu);
-		}
+		}*/
 
 		boolean vsyncScreen = false;
-		if (EagRuntime.getConfiguration().isEnforceVSync() && Display.isVSyncSupported() && !gameSettings.enableVsync) {
+		// Nice try, lax1dude
+		/*if (EagRuntime.getConfiguration().isEnforceVSync() && Display.isVSyncSupported() && !gameSettings.enableVsync) {
 			gameSettings.enableVsync = true;
 			gameSettings.saveOptions();
 			vsyncScreen = true;
-		}
+		}*/
 
 		int vidIssues = gameSettings.checkBadVideoSettings();
 		if (vidIssues != 0) {
 			mainMenu = new GuiScreenVideoSettingsWarning(mainMenu, vidIssues);
 		}
 
-		if (vsyncScreen) {
+		// Nice try, lax1dude
+		/*if (vsyncScreen) {
 			mainMenu = new GuiScreenVSyncReEnabled(mainMenu);
-		}
+		}*/
 
 		this.displayGuiScreen(mainMenu);
 

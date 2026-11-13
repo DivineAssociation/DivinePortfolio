@@ -97,16 +97,16 @@ public class GameSettings {
 	public boolean viewBobbing = true;
 	public boolean anaglyph;
 	public boolean fboEnable = true;
-	public int limitFramerate = 260;
+	public int limitFramerate = 120;
 	/**+
 	 * Clouds flag
 	 */
-	public int clouds = 1;
-	public boolean fancyGraphics = false;
+	public int clouds = 2;
+	public boolean fancyGraphics = true;
 	/**+
 	 * Smooth Lighting
 	 */
-	public int ambientOcclusion = 0;
+	public int ambientOcclusion = 2;
 	public List<String> resourcePacks = Lists.newArrayList();
 	public List<String> field_183018_l = Lists.newArrayList();
 	public EntityPlayer.EnumChatVisibility chatVisibility = EntityPlayer.EnumChatVisibility.FULL;
@@ -115,7 +115,7 @@ public class GameSettings {
 	public boolean chatLinksPrompt = true;
 	public float chatOpacity = 1.0F;
 	public boolean snooperEnabled = true;
-	public boolean enableVsync = EagRuntime.getPlatformType() != EnumPlatformType.DESKTOP;
+	public boolean enableVsync = false;
 	public boolean allowBlockAlternatives = true;
 	public boolean reducedDebugInfo = false;
 	public boolean hideServerAddress;
@@ -154,8 +154,8 @@ public class GameSettings {
 	public KeyBinding keyBindPlayerList = new KeyBinding("key.playerlist", 15, "key.categories.multiplayer");
 	public KeyBinding keyBindCommand = new KeyBinding("key.command", 53, "key.categories.multiplayer");
 	public KeyBinding keyBindScreenshot = new KeyBinding("key.screenshot", 60, "key.categories.misc");
-	public KeyBinding keyBindTogglePerspective = new KeyBinding("key.togglePerspective", 63, "key.categories.misc");
-	public KeyBinding keyBindSmoothCamera = new KeyBinding("key.smoothCamera", KeyboardConstants.KEY_M,
+	public KeyBinding keyBindTogglePerspective = new KeyBinding("key.togglePerspective", KeyboardConstants.KEY_P, "key.categories.misc");
+	public KeyBinding keyBindSmoothCamera = new KeyBinding("key.smoothCamera", 0,
 			"key.categories.misc");
 	public KeyBinding keyBindZoomCamera = new KeyBinding("key.zoomCamera", KeyboardConstants.KEY_C,
 			"key.categories.misc");
@@ -191,12 +191,12 @@ public class GameSettings {
 	/**+
 	 * GUI scale
 	 */
-	public int guiScale = 3;
+	public int guiScale = 2;
 	public int particleSetting;
 	public String language;
 	public boolean forceUnicodeFont;
-	public boolean hudFps = true;
-	public boolean hudCoords = true;
+	public boolean hudFps = false;
+	public boolean hudCoords = false;
 	public boolean hudPlayer = false;
 	public boolean hudWorld = false;
 	public boolean hudStats = false;
@@ -209,18 +209,18 @@ public class GameSettings {
 	public EaglerDeferredConfig deferredShaderConf = new EaglerDeferredConfig();
 	public boolean enableUpdateSvc = true;
 	public boolean enableFNAWSkins = true;
-	public boolean enableDynamicLights = false;
-	public boolean hasHiddenPhishWarning = false;
+	public boolean enableDynamicLights = true;
+	public boolean hasHiddenPhishWarning = true;
 	public boolean enableProfanityFilter = false;
-	public boolean hasShownProfanityFilter = false;
+	public boolean hasShownProfanityFilter = true;
 	public float touchControlOpacity = 1.0f;
-	public boolean hideDefaultUsernameWarning = false;
-	public boolean hideVideoSettingsWarning = EagRuntime.getPlatformType() == EnumPlatformType.DESKTOP;
+	public boolean hideDefaultUsernameWarning = true;
+	public boolean hideVideoSettingsWarning = true;
 
 	public int voiceListenRadius = 16;
 	public float voiceListenVolume = 0.5f;
 	public float voiceSpeakVolume = 0.5f;
-	public int voicePTTKey = 47; // V
+	public int voicePTTKey = 0; // V
 
 	public EnumScreenRecordingCodec screenRecordCodec;
 	public int screenRecordFPS = ScreenRecordingController.DEFAULT_FPS;
@@ -247,7 +247,7 @@ public class GameSettings {
 		this.relayTimeout = 4;
 		this.hideJoinCode = false;
 		this.lastServer = "";
-		this.fovSetting = 70.0F;
+		this.fovSetting = 80.0F;
 		this.gammaSetting = 1.0F;
 		this.language = EagRuntime.getConfiguration().getDefaultLocale();
 		this.forceUnicodeFont = false;
@@ -1341,9 +1341,11 @@ public class GameSettings {
 	}
 
 	public float getSoundLevel(SoundCategory parSoundCategory) {
-		return this.mapSoundLevels.containsKey(parSoundCategory)
-				? ((Float) this.mapSoundLevels.get(parSoundCategory)).floatValue()
-				: 1.0F;
+		if (this.mapSoundLevels.containsKey(parSoundCategory)) {
+			return ((Float) this.mapSoundLevels.get(parSoundCategory)).floatValue();
+		} else {
+			return parSoundCategory == SoundCategory.MUSIC ? 0.0F : 1.0F;
+		}
 	}
 
 	public void setSoundLevel(SoundCategory parSoundCategory, float parFloat1) {

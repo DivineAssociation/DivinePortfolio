@@ -9,9 +9,9 @@ public class EaglercraftVersion {
 	
 	/// Customize these to fit your fork:
 	
-	public static final String projectForkName = "EaglercraftX";
-	public static final String projectForkVersion = "u53";
-	public static final String projectForkVendor = "lax1dude";
+	public static final String projectForkName = "DivinePortfolio";
+	public static final String projectForkVersion = "v1.0.0";
+	public static final String projectForkVendor = "StrangeGuyPerson";
 	
 	public static final String projectForkURL = "https://gitlab.com/lax1dude/eaglercraftx-1.8";
 	
@@ -22,11 +22,11 @@ public class EaglercraftVersion {
 	public static final String projectOriginRevision = "1.8";
 	public static final String projectOriginVersion = "u53";
 	
-	public static final String projectOriginURL = "https://gitlab.com/lax1dude/eaglercraftx-1.8"; // rest in peace
+	public static final String projectOriginURL = "https://gitlab.com/lax1dude/eaglercraftx-1.8"; // rip
 	
 	// EPK Version Identifier
 	
-	public static final String EPKVersionIdentifier = "u53"; // Set to null to disable EPK version check
+	public static final String EPKVersionIdentifier = null; // Set to null to disable EPK version check
 	
 	// Updating configuration
 	
@@ -52,26 +52,26 @@ public class EaglercraftVersion {
 	// Miscellaneous variables:
 
 	public static final String mainMenuStringA = "Minecraft 1.8.8";
-	public static final String mainMenuStringB = projectOriginName + " " + projectOriginRevision + "-"
-			+ projectOriginVersion + " ultimate [" + EagRuntime.getPlatformType().getName() + "]";
-	public static final String mainMenuStringC = "";
-	public static final String mainMenuStringD = "Resources Copyright Mojang AB";
+	public static final String mainMenuStringB = projectForkName + " " + projectForkVersion + " (" + EagRuntime.getPlatformType().getName() + " build)";
+	public static final String mainMenuStringC = "Made by " + projectForkVendor;
+	public static final String mainMenuStringD = "Resources Copyright Mojang AB. Do not distribute!";
 
-	public static final String mainMenuStringE = projectForkName + " " + projectForkVersion;
-	public static final String mainMenuStringF = "Made by " + projectForkVendor;
+	//public static final String mainMenuStringE = projectForkName + " " + projectForkVersion;
+	//public static final String mainMenuStringF = "Made by " + projectForkVendor;
+	public static final String mainMenuStringE = "";
+	public static final String mainMenuStringF = "";
 
-	public static final String mainMenuStringG = "Collector's Edition";
-	public static final String mainMenuStringH = "PBR Shaders";
+	public static final String mainMenuStringG = "";
+	public static final String mainMenuStringH = "";
 
-	public static final String screenRecordingFilePrefix = projectOriginName + " "
-			+ projectOriginRevision + "-" + projectOriginVersion;
+	public static final String screenRecordingFilePrefix = projectForkName + " " + projectForkVersion;
 
-	public static final long demoWorldSeed = (long) "North Carolina".hashCode();
+	public static final long demoWorldSeed = (long) "Skill Issue".hashCode();
 
 	public static final boolean mainMenuEnableGithubButton = false;
 
 	public static final boolean forceDemoMode = false;
 
-	public static final String localStorageNamespace = "_eaglercraftX";
+	public static final String localStorageNamespace = "_divine-portfolio";
 
 }

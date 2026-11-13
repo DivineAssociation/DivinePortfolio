@@ -130,7 +130,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback {
 			String str;
 			int k = getCloseKey();
 			if (k == KeyboardConstants.KEY_GRAVE) {
-				str = I18n.format("gui.exitKeyRetarded");
+				str = I18n.format("gui.exitKeyRetarded"); // lax1dude what the hell
 			} else {
 				str = I18n.format("gui.exitKey", Keyboard.getKeyName(k));
 			}

@@ -1,8 +1,4 @@
-# eaglercraft-workspace
-
-### Java 17 or greater is required!
-
-**To get started, import this entire folder into your IDE as a Gradle project, this will automatically create several different projects to build all the common classes and each runtime.**
+# DivinePortfolio
 
 The Gradle plugin was created by [cire3](https://github.com/cire3wastaken), and the source code is available [here](https://github.com/The-Resent-Team/open-source-projects).
 

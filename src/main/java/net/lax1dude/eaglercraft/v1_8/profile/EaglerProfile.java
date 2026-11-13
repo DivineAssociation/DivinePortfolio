@@ -461,15 +461,18 @@ public class EaglerProfile {
 		
 		rand = new EaglercraftRandom();
 		
-		do {
+		/*do {
 			username = HString.format("%s%s%04d", defaultNames[rand.nextInt(defaultNames.length)], defaultNames[rand.nextInt(defaultNames.length)], rand.nextInt(10000));
-		}while(username.length() > 16);
-		
+		}while(username.length() > 16);*/
+
+		username = "TheVisitor";
 		setName(username);
 		
-		do {
+		/*do {
 			presetSkinId = rand.nextInt(DefaultSkins.defaultSkinsMap.length);
-		}while(DefaultSkins.defaultSkinsMap[presetSkinId].model.highPoly != null);
+		}while(DefaultSkins.defaultSkinsMap[presetSkinId].model.highPoly != null);*/
+
+		presetSkinId = 0;
 		customSkinId = -1;
 		
 		presetCapeId = 0;

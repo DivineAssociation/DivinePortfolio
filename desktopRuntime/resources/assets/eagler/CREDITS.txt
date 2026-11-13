@@ -1,3 +1,15 @@
+Massive thanks to the developers of Eaglercraft and EaglercraftX. Without them, this project would not have existed.
+ — StrangeGuyPerson
+
+ DivinePortfolio Developers
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ StrangeGuyPerson:
+  - Sole developer of DivinePortfolio
+  - yeah thats it
+  - scroll down to see the names of all the other important people who made this project possible!
+
+
 
  EaglercraftX Developers
  ~~~~~~~~~~~~~~~~~~~~~~~

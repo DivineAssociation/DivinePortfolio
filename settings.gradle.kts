@@ -15,7 +15,8 @@ pluginManagement {
 	}
 }
 
-rootProject.name = "eaglercraft-workspace"
+//rootProject.name = "eaglercraft-workspace"
+rootProject.name = "DivinePortfolio"
 
 include("target_lwjgl_desktop")
 include("target_teavm_javascript")
