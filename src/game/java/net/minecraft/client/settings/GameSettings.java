@@ -703,7 +703,7 @@ public class GameSettings {
 				&& parOptions == GameSettings.Options.EAGLER_VSYNC) {
 			boolean flag = this.getOptionOrdinalValue(parOptions);
 			return flag ? s + I18n.format("options.on", new Object[0])
-					: EnumChatFormatting.RED + s + I18n.format("options.off", new Object[0]);
+					: s + I18n.format("options.off", new Object[0]);
 		} else if (parOptions.getEnumBoolean()) {
 			boolean flag = this.getOptionOrdinalValue(parOptions);
 			return flag ? s + I18n.format("options.on", new Object[0]) : s + I18n.format("options.off", new Object[0]);
