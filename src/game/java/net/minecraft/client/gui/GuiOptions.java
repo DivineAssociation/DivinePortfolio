@@ -264,7 +264,7 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback {
 		this.drawDefaultBackground();
 		this.drawCenteredString(this.fontRendererObj, this.field_146442_a, this.width / 2, 15, 16777215);
 
-		if (mc.theWorld == null && !EagRuntime.getConfiguration().isDemo()) {
+		/*if (mc.theWorld == null && !EagRuntime.getConfiguration().isDemo()) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(0.75f, 0.75f, 0.75f);
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -280,14 +280,14 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback {
 			drawString(mc.fontRendererObj, EnumChatFormatting.UNDERLINE + text, 5, 5, hover ? 0xFFEEEE22 : 0xFFCCCCCC);
 
 			GlStateManager.popMatrix();
-		}
+		}*/
 
-		if (mc.theWorld == null && EagRuntime.getConfiguration().isAllowBootMenu()) {
+		/*if (mc.theWorld == null && EagRuntime.getConfiguration().isAllowBootMenu()) {
 			drawCenteredString(mc.fontRendererObj, I18n.format("options.pressDeleteText"), width / 2, height / 6 + 22,
 					11184810);
-		}
+		}*/
 
-		if (EagRuntime.getConfiguration().isEnableServerCookies() && mc.thePlayer == null) {
+		/*if (EagRuntime.getConfiguration().isEnableServerCookies() && mc.thePlayer == null) {
 			GlStateManager.pushMatrix();
 			GlStateManager.scale(0.75f, 0.75f, 0.75f);
 			GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -304,7 +304,7 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback {
 					hover ? 0xFFEEEE22 : 0xFFCCCCCC);
 
 			GlStateManager.popMatrix();
-		}
+		}*/
 
 		super.drawScreen(i, j, f);
 	}
