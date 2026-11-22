@@ -461,6 +461,11 @@ public abstract class ServerConfigurationManager {
 			}
 		}
 
+		if (conqueredEnd) {
+			BlockPos spawn = worldserver.getTopSolidOrLiquidBlock(new BlockPos(0, 0, 0));
+			entityplayermp.setLocationAndAngles(0.5D, (double)spawn.getY() + 0.1D, 0.5D, 0.0F, 0.0F);
+		}
+
 		worldserver.theChunkProviderServer.loadChunk((int) entityplayermp.posX >> 4, (int) entityplayermp.posZ >> 4);
 
 		while (!worldserver.getCollidingBoundingBoxes(entityplayermp, entityplayermp.getEntityBoundingBox()).isEmpty()

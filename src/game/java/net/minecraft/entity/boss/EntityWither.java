@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import java.util.List;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -18,22 +19,24 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.AchievementList;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.*;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
@@ -57,6 +60,7 @@ import net.minecraft.world.World;
  * POSSIBILITY OF SUCH DAMAGE.
  * 
  */
+
 public class EntityWither extends EntityMob implements IBossDisplayData, IRangedAttackMob {
 	private float[] field_82220_d = new float[2];
 	private float[] field_82221_e = new float[2];
@@ -65,6 +69,10 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	private int[] field_82223_h = new int[2];
 	private int[] field_82224_i = new int[2];
 	private int blockBreakCounter;
+	public static final int CHARGEUP_TIME = 1200;
+	private boolean hasHitSecondPhase = false;
+	private boolean hasHitLowHP = false;
+	private double deathTargetY = -0.0D;
 	/**+
 	 * Selector used to determine the entities a wither boss should
 	 * attack.
@@ -79,7 +87,7 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	public EntityWither(World worldIn) {
 		super(worldIn);
 		this.setHealth(this.getMaxHealth());
-		this.setSize(0.9F, 3.5F);
+		this.setSize(1.35F, 5.25F);
 		this.isImmuneToFire = true;
 		((PathNavigateGround) this.getNavigator()).setCanSwim(true);
 		this.tasks.addTask(0, new EntityAISwimming(this));
@@ -226,30 +234,261 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 		if (this.getInvulTime() > 0) {
 			for (int i1 = 0; i1 < 3; ++i1) {
 				this.worldObj.spawnParticle(EnumParticleTypes.SPELL_MOB, this.posX + this.rand.nextGaussian() * 1.0D,
-						this.posY + (double) (this.rand.nextFloat() * 3.3F),
+						this.posY + (double) (this.rand.nextFloat() * this.height),
 						this.posZ + this.rand.nextGaussian() * 1.0D, 0.699999988079071D, 0.699999988079071D,
 						0.8999999761581421D, new int[0]);
 			}
+			this.motionX = 0.0D;
+			this.motionY = 0.0D;
+			this.motionZ = 0.0D;
 		}
 
+		if (!this.worldObj.isRemote && this.isArmored() && !this.hasHitSecondPhase) {
+			this.hasHitSecondPhase = true;
+			this.displayTitleToAll("", "§5§l§oIT'S NOT OVER YET, KID!  §r§r§r", 10, 70, 20);
+			for (int i = 0; i < 5; i++) {
+				// WHY THE FUCK DOESNT THIS WORK GODDAMMIT
+				/*EntitySkeleton skeleton = new EntitySkeleton(this.worldObj) {
+					public void onLivingUpdate() {
+						super.onLivingUpdate();
+						if (this.worldObj.isRemote) {
+							for (int j = 0; j < 3; ++j) {
+								this.worldObj.spawnParticle(EnumParticleTypes.SPELL_MOB,
+										this.posX + this.rand.nextGaussian() * 0.5D,
+										this.posY + (double) (this.rand.nextFloat() * this.height),
+										this.posZ + this.rand.nextGaussian() * 0.5D,
+										0.5D, 0.0D, 0.0D, new int[0]);
+							}
+						}
+					}
+					@Override
+					public void addPotionEffect(PotionEffect effect) {
+						if (effect.getPotionID() == Potion.wither.id) {
+							return;
+						}
+						super.addPotionEffect(effect);
+					}
+					@Override
+					public boolean attackEntityFrom(DamageSource source, float amount) {
+						if (source == DamageSource.fall || source.getEntity() instanceof EntityWither || source.getSourceOfDamage() instanceof  EntityWitherSkull) {
+							return false;
+						}
+						return super.attackEntityFrom(source, amount);
+					}
+				};*/
+				EntitySkeleton skeleton = new EntitySkeleton(this.worldObj);
+				skeleton.setSkeletonType(1);
+                skeleton.isImmuneToFire = true;
+				skeleton.setCurrentItemOrArmor(0, new ItemStack(Items.iron_sword));
+				skeleton.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(60.0D);
+				skeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(8.0D);
+				skeleton.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.6D);
+				skeleton.setHealth(60.0F);
+
+				double spawnX = this.posX + (this.rand.nextDouble() - 0.5D) * 10.0D;
+				double spawnY = this.posY + 3.0F;
+				double spawnZ = this.posZ + (this.rand.nextDouble() - 0.5D) * 10.0D;
+				BlockPos pos = new BlockPos(spawnX, spawnY, spawnZ);
+				while (spawnY > 0 && this.worldObj.isAirBlock(pos)) {
+					spawnY--;
+					pos = new BlockPos(spawnX, spawnY, spawnZ);
+				}
+				skeleton.setLocationAndAngles(spawnX, this.posY, spawnZ, this.rand.nextFloat() * 360.0F, 0.0F);
+
+				this.worldObj.spawnEntityInWorld(skeleton);
+			}
+		}
 	}
 
 	protected void updateAITasks() {
 		if (this.getInvulTime() > 0) {
 			int j1 = this.getInvulTime() - 1;
+			int elapsedInvulTime = CHARGEUP_TIME - j1;
+
+			switch (elapsedInvulTime) {
+				case 18:
+					this.sendChatMessageToAll("<§7???§r> Oh, there you are. ");
+					break;
+				case 68:
+					this.sendChatMessageToAll("<§7???§r> I’ve been expecting you. ");
+					break;
+				case 118:
+					this.sendChatMessageToAll("<§7???§r> … ");
+					break;
+				case 168:
+					this.sendChatMessageToAll("<§7???§r> There was never any other outcome. ");
+					break;
+				case 218:
+					this.sendChatMessageToAll("<§7???§r> It was always going to end like this. ");
+					break;
+				case 268:
+					this.sendChatMessageToAll("<§7???§r> You were already summoning me long before you placed that final artifact. ");
+					break;
+				case 318:
+					this.sendChatMessageToAll("<§7???§r> Everything before this point was meticulously laid out by me to ensure you do what you just did. ");
+					break;
+				case 368:
+					this.sendChatMessageToAll("<§7???§r> And everything played out perfectly. My plan was foolproof, because here I am. ");
+					break;
+				case 418:
+					this.sendChatMessageToAll("<§7???§r> And now that you’ve created me, you’ve done your part. ");
+					break;
+				case 468:
+					this.sendChatMessageToAll("<§7???§r> You’re not needed anymore. I’ll take it on from here. ");
+					break;
+				case 518:
+					this.sendChatMessageToAll("<§7???§r> In fact, who even needs you these days? ");
+					break;
+				case 568:
+					this.sendChatMessageToAll("<§7???§r> These days, when you can just copy-paste everything from AI, no one needs… ");
+					break;
+				case 618:
+					this.sendChatMessageToAll("<§7???§r> …a §e§oProgrammer§r§r. ");
+					break;
+				case 668:
+					this.sendChatMessageToAll("<§7???§r> So thank you §oSO much§r for making me real. ");
+					break;
+				case 718:
+					this.sendChatMessageToAll("<§7???§r> §4Now die. §r");
+					break;
+				case 768:
+					this.sendChatMessageToAll("<§7???§r> … ");
+					break;
+				case 818:
+					this.sendChatMessageToAll("<§7???§r> What, you think you can do anything about it? ");
+					break;
+				case 868:
+					this.sendChatMessageToAll("<§7???§r> You think you can stop §oME§r?! ");
+					break;
+				case 918:
+					this.sendChatMessageToAll("<§7???§r> §l§oDO YOU EVEN KNOW WHO I AM?! §r§r");
+					break;
+				case 968:
+					this.sendChatMessageToAll("<§7???§r> I'll ask again. ");
+					break;
+				case 1018:
+					this.sendChatMessageToAll("<§7???§r> §l§oDO. YOU. EVEN KNOW. WHAT. I. CAN. DO?! §r§r");
+					break;
+				case 1068:
+					this.sendChatMessageToAll("<§7???§r> Fine. I’ll show you, don’t worry. ");
+					break;
+				case 1118:
+					this.sendChatMessageToAll("<§7???§r> §l§oI AM§r§r—");
+					for (EntityPlayer player : this.worldObj.playerEntities) {
+						EntityPlayerMP playerMP = (EntityPlayerMP) player;
+						playerMP.addPotionEffect(new PotionEffect(Potion.blindness.getId(), 72, 0, false, false));
+					}
+					break;
+				case 1128:
+					this.displayTitleToAll("", "§5§l_§r§r", 0, 70, 20);
+					break;
+				case 1129:
+					this.displayTitleToAll("", "§5§lQ_§r§r", 0, 70, 20);
+					break;
+				case 1130:
+					this.displayTitleToAll("", "§5§lQu_§r§r", 0, 70, 20);
+					break;
+				case 1131:
+					this.displayTitleToAll("", "§5§lQui_§r§r", 0, 70, 20);
+					break;
+				case 1132:
+					this.displayTitleToAll("", "§5§lQuin_§r§r", 0, 70, 20);
+					break;
+				case 1133:
+					this.displayTitleToAll("", "§5§lQuint_§r§r", 0, 70, 20);
+					break;
+				case 1134:
+					this.displayTitleToAll("", "§5§lQuinte_§r§r", 0, 70, 20);
+					break;
+				case 1135:
+					this.displayTitleToAll("", "§5§lQuintes_§r§r", 0, 70, 20);
+					break;
+				case 1136:
+					this.displayTitleToAll("", "§5§lQuintess_§r§r", 0, 70, 20);
+					break;
+				case 1137:
+					this.displayTitleToAll("", "§5§lQuintesse_§r§r", 0, 70, 20);
+					break;
+				case 1138:
+					this.displayTitleToAll("", "§5§lQuintessen_§r§r", 0, 70, 20);
+					break;
+				case 1139:
+					this.displayTitleToAll("", "§5§lQuintessenc_§r§r", 0, 70, 20);
+					break;
+				case 1140:
+					this.displayTitleToAll("", "§5§lQuintessence_§r§r", 0, 70, 20);
+					break;
+				case 1141:
+					this.displayTitleToAll("", "§5§lQuintessence _§r§r", 0, 70, 20);
+					break;
+				case 1142:
+					this.displayTitleToAll("", "§5§lQuintessence o_§r§r", 0, 70, 20);
+					break;
+				case 1143:
+					this.displayTitleToAll("", "§5§lQuintessence of_§r§r", 0, 70, 20);
+					break;
+				case 1144:
+					this.displayTitleToAll("", "§5§lQuintessence of _§r§r", 0, 70, 20);
+					break;
+				case 1145:
+					this.displayTitleToAll("", "§5§lQuintessence of S_§r§r", 0, 70, 20);
+					break;
+				case 1146:
+					this.displayTitleToAll("", "§5§lQuintessence of Sl_§r§r", 0, 70, 20);
+					break;
+				case 1147:
+					this.displayTitleToAll("", "§5§lQuintessence of Slo_§r§r", 0, 70, 20);
+					break;
+				case 1148:
+					this.displayTitleToAll("", "§5§lQuintessence of Slop§r§r", 0, 70, 20);
+					break;
+				case 1168:
+					this.displayTitleToAll("§d§lTHE§r§r§l ", "§5§lQuintessence of Slop§r§r", 0, 70, 20);
+					break;
+				case 1176:
+					this.displayTitleToAll("§d§lTHE§r§r§l §r§6§lVIBE§r§r§l ", "§5§lQuintessence of Slop§r§r", 0, 70, 20);
+					break;
+				case 1184:
+					this.displayTitleToAll("§d§lTHE§r§r§l §r§6§lVIBE§r§r§l §r§1§lCODER§r§r", "§5§lQuintessence of Slop§r§r", 0, 70, 20);
+					break;
+				case 1200:
+					this.sendChatMessageToAll("§5§lQuintessence of Slop§r§r§5,§r §d§lTHE§r§r§l §r§6§lVIBE§r§r§l §r§1§lCODER§r§r §5has awoken! §r");
+					break;
+				default:
+					break;
+			}
+
 			if (j1 <= 0) {
-				this.worldObj.newExplosion(this, this.posX, this.posY + (double) this.getEyeHeight(), this.posZ, 7.0F,
-						false, this.worldObj.getGameRules().getBoolean("mobGriefing"));
+				/*this.worldObj.newExplosion(this, this.posX, this.posY + (double) this.getEyeHeight(), this.posZ, 7.0F,
+						false, this.worldObj.getGameRules().getBoolean("mobGriefing"));*/
 				this.worldObj.playBroadcastSound(1013, new BlockPos(this), 0);
+				this.setSilent(false);
+				this.worldObj.addWeatherEffect(new EntityLightningBolt(this.worldObj, this.posX, this.posY, this.posZ));
+				this.setAlwaysRenderNameTag(true);
+				this.setCustomNameTag("§d§lTHE§r§r§l §r§6§lVIBE§r§r§l §r§1§lCODER§r§r");
+				for (int i = 0; i <= 14; i++) {
+					float f = (this.rand.nextFloat() - 0.5F) * 8.0F;
+					float f1 = (this.rand.nextFloat() - 0.5F) * 8.0F;
+					float f2 = (this.rand.nextFloat() - 0.5F) * 8.0F;
+					this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE,
+							this.posX + (double) f, this.posY + (double) f1 + 2.625D, this.posZ + (double) f2,
+							0.0D, 0.0D, 0.0D, new int[0]);
+				}
 			}
 
 			this.setInvulTime(j1);
-			if (this.ticksExisted % 10 == 0) {
+			this.heal((this.getMaxHealth() - 1.0F) / (float) CHARGEUP_TIME);
+			/*if (this.ticksExisted % 10 == 0) {
 				this.heal(10.0F);
-			}
+			}*/
 
 		} else {
 			super.updateAITasks();
+
+			if (!this.hasHitLowHP && this.getHealth() <= (this.getMaxHealth() * 0.15) && this.getHealth() > 0.0F) {
+				this.hasHitLowHP = true;
+				this.displayTitleToAll("", "§5§l§oA COPY-PASTER DOES NOT FEAR DEATH!!! §r§r§r", 10, 70, 20);
+			}
 
 			for (int i = 1; i < 3; ++i) {
 				if (this.ticksExisted >= this.field_82223_h[i - 1]) {
@@ -349,8 +588,8 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 				}
 			}
 
-			if (this.ticksExisted % 20 == 0) {
-				this.heal(1.0F);
+			if (this.ticksExisted % 20 == 0 && !this.isArmored()) {
+				this.heal(0.15F);
 			}
 
 		}
@@ -362,8 +601,9 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	}
 
 	public void func_82206_m() {
-		this.setInvulTime(220);
-		this.setHealth(this.getMaxHealth() / 3.0F);
+		this.setInvulTime(CHARGEUP_TIME);
+		//this.setSilent(true);
+		this.setHealth(1.0F);
 	}
 
 	/**+
@@ -386,12 +626,12 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 		} else {
 			float f = (this.renderYawOffset + (float) (180 * (parInt1 - 1))) / 180.0F * 3.1415927F;
 			float f1 = MathHelper.cos(f);
-			return this.posX + (double) f1 * 1.3D;
+			return this.posX + (double) f1 * 1.95D;
 		}
 	}
 
 	private double func_82208_v(int parInt1) {
-		return parInt1 <= 0 ? this.posY + 3.0D : this.posY + 2.2D;
+		return parInt1 <= 0 ? this.posY + 4.5D : this.posY + 3.3D;
 	}
 
 	private double func_82213_w(int parInt1) {
@@ -400,7 +640,7 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 		} else {
 			float f = (this.renderYawOffset + (float) (180 * (parInt1 - 1))) / 180.0F * 3.1415927F;
 			float f1 = MathHelper.sin(f);
-			return this.posZ + (double) f1 * 1.3D;
+			return this.posZ + (double) f1 * 1.95D;
 		}
 	}
 
@@ -449,6 +689,7 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	 * Attack the specified entity using a ranged attack.
 	 */
 	public void attackEntityWithRangedAttack(EntityLivingBase entitylivingbase, float var2) {
+		if (this.getInvulTime() > 0) return;
 		this.launchWitherSkullToEntity(0, entitylivingbase);
 	}
 
@@ -494,10 +735,10 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	 * Drop 0-2 items of this living's type
 	 */
 	protected void dropFewItems(boolean var1, int var2) {
-		EntityItem entityitem = this.dropItem(Items.nether_star, 1);
+		/*EntityItem entityitem = this.dropItem(Items.nether_star, 1);
 		if (entityitem != null) {
 			entityitem.setNoDespawn();
-		}
+		}*/
 
 		if (!this.worldObj.isRemote) {
 			List<EntityPlayer> lst = this.worldObj.getEntitiesWithinAABB(EntityPlayer.class,
@@ -535,7 +776,7 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(300.0D);
+		this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(440.0D);
 		this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.6000000238418579D);
 		this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(40.0D);
 	}
@@ -577,7 +818,7 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	 * maximum.
 	 */
 	public boolean isArmored() {
-		return this.getHealth() <= this.getMaxHealth() / 2.0F;
+		return this.getHealth() <= 199.0F && this.getInvulTime() <= 0;
 	}
 
 	/**+
@@ -593,5 +834,170 @@ public class EntityWither extends EntityMob implements IBossDisplayData, IRanged
 	 */
 	public void mountEntity(Entity var1) {
 		this.ridingEntity = null;
+	}
+
+	@Override
+	protected void onDeathUpdate() {
+		++this.deathTime;
+		this.noClip = true;
+		if (this.deathTime == 1) {
+			BlockPos centerPos = this.worldObj.getTopSolidOrLiquidBlock(new BlockPos(0, 0, 0));
+			this.deathTargetY = (double) centerPos.getY() + 5.0D;
+			float targetYaw = (float) (MathHelper.func_181159_b(0.0D - this.posZ, 0.0D - this.posX) * 180.0D / Math.PI) - 90.0F;
+			this.rotationYaw = targetYaw;
+			this.renderYawOffset = targetYaw;
+		}
+		if (this.deathTime <= 80) {
+			this.motionX = (0.0D - this.posX) / (81 - this.deathTime);
+			this.motionY = (this.deathTargetY - this.posY) / (81 - this.deathTime);
+			this.motionZ = (0.0D - this.posZ) / (81 - this.deathTime);
+		} else if (this.deathTime <= 240) {
+			this.motionX = 0.0D;
+			this.motionY = 0.0D;
+			this.motionZ = 0.0D;
+			this.rotationYaw += 2.25F;
+			this.renderYawOffset = rotationYaw;
+			if (this.deathTime % 5 == 0) {
+				float f = (this.rand.nextFloat() - 0.5F) * 6.0F;
+				float f1 = (this.rand.nextFloat() - 0.5F) * 6.0F;
+				float f2 = (this.rand.nextFloat() - 0.5F) * 6.0F;
+				this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE,
+						this.posX + (double) f, this.posY + (double) f1 + 2.625D, this.posZ + (double) f2,
+						0.0D, 0.0D, 0.0D, new int[0]);
+			}
+		}
+		this.moveEntity(this.motionX, this.motionY, this.motionZ);
+		if (this.deathTime == 81) {
+			if (!this.worldObj.isRemote) this.worldObj.playBroadcastSound(1018, new BlockPos(this), 0);
+		} else if (this.deathTime == 240) {
+			for (int i = 0; i <= 14; i++) {
+				float f = (this.rand.nextFloat() - 0.5F) * 8.0F;
+				float f1 = (this.rand.nextFloat() - 0.5F) * 8.0F;
+				float f2 = (this.rand.nextFloat() - 0.5F) * 8.0F;
+				this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE,
+						this.posX + (double) f, this.posY + (double) f1 + 2.625D, this.posZ + (double) f2,
+						0.0D, 0.0D, 0.0D, new int[0]);
+			}
+		}
+		if (!this.worldObj.isRemote && (this.deathTime == 20 || this.deathTime == 60 || this.deathTime == 100 || this.deathTime == 140 || this.deathTime == 180 || this.deathTime == 220)) {
+			String defeatDialog = "";
+			String defeatMessage = "";
+			switch (this.deathTime) {
+				case 20:
+					defeatDialog = "§5§l§oI WILL NOT BE DESTROYED!!! §r§r§r";
+					defeatMessage = "§5§oI WILL NOT BE DESTROYED!!! §r§r";
+					break;
+				case 60:
+					defeatDialog = "§5§l§oI WILL NOT BE DESTROYED!!! §r§r§r";
+					defeatMessage = "§5§oI WILL NOT BE DESTROYED!!! §r§r";
+					break;
+				case 100:
+					defeatDialog = "§5§l§oI WILL NOT BE DESTROYED!!! §r§r§r";
+					defeatMessage = "§5§oI WILL NOT BE DESTROYED!!! §r§r";
+					break;
+				case 140:
+					defeatDialog = "§5§l§oI WILL NOT BE... §r§r§r";
+					defeatMessage = "§5§oI WILL NOT BE... §r§r";
+					break;
+				case 180:
+					defeatDialog = "§5§l§oI WILL NOT... §r§r§r";
+					defeatMessage = "§5§oI WILL NOT... §r§r";
+					break;
+				case 220:
+					defeatDialog = "§5§l§oI... §r§r§r";
+					defeatMessage = "§5§oI... §r§r";
+					break;
+				default:
+					break;
+			}
+			this.displayTitleToAll("", defeatDialog, 10, 20, 20);
+			this.sendChatMessageToAll(defeatMessage);
+		}
+		if (this.deathTime > 240 && !this.worldObj.isRemote) {
+			this.sendChatMessageToAll("§5§lQuintessence of Slop§r§r§5,§r §d§lTHE§r§r§l §r§6§lVIBE§r§r§l §r§1§lCODER§r§r §5has been defeated! §r");
+			if (this.worldObj.getGameRules().getBoolean("doMobLoot")) {
+				int xp = 14000;
+				while (xp > 0) {
+					int j = EntityXPOrb.getXPSplit(xp);
+					xp -= j;
+					this.worldObj.spawnEntityInWorld(
+							new net.minecraft.entity.item.EntityXPOrb(this.worldObj, this.posX, this.posY, this.posZ, j));
+				}
+			}
+			BlockPos portalPos = this.worldObj.getTopSolidOrLiquidBlock(new BlockPos(0, 0, 0));
+			this.generatePortal(portalPos);
+			this.setDead();
+		}
+	}
+
+	private void generatePortal(BlockPos pos) {
+		boolean flag = true;
+		double d0 = 12.25D;
+		double d1 = 6.25D;
+
+		for (int i = -1; i <= 32; ++i) {
+			for (int j = -4; j <= 4; ++j) {
+				for (int k = -4; k <= 4; ++k) {
+					double d2 = (double) (j * j + k * k);
+					if (d2 <= 12.25D) {
+						BlockPos blockpos = pos.add(j, i, k);
+						if (i < 0) {
+							if (d2 <= 6.25D) {
+								this.worldObj.setBlockState(blockpos, Blocks.bedrock.getDefaultState());
+							}
+						} else if (i > 0) {
+							this.worldObj.setBlockState(blockpos, Blocks.air.getDefaultState());
+						} else if (d2 > 6.25D) {
+							this.worldObj.setBlockState(blockpos, Blocks.bedrock.getDefaultState());
+						} else {
+							this.worldObj.setBlockState(blockpos, Blocks.end_portal.getDefaultState());
+						}
+					}
+				}
+			}
+		}
+
+		this.worldObj.setBlockState(pos, Blocks.bedrock.getDefaultState());
+		this.worldObj.setBlockState(pos.up(), Blocks.bedrock.getDefaultState());
+		BlockPos blockpos1 = pos.up(2);
+		this.worldObj.setBlockState(blockpos1, Blocks.bedrock.getDefaultState());
+		this.worldObj.setBlockState(blockpos1.west(),
+				Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.EAST));
+		this.worldObj.setBlockState(blockpos1.east(),
+				Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.WEST));
+		this.worldObj.setBlockState(blockpos1.north(),
+				Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.SOUTH));
+		this.worldObj.setBlockState(blockpos1.south(),
+				Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.NORTH));
+		this.worldObj.setBlockState(pos.up(3), Blocks.bedrock.getDefaultState());
+		this.worldObj.setBlockState(pos.up(4), Blocks.diamond_block.getDefaultState());
+	}
+
+	private void sendChatMessageToAll(String message) {
+		if (this.worldObj.isRemote) return;
+		for (EntityPlayer player : this.worldObj.playerEntities) {
+			EntityPlayerMP playerMP = (EntityPlayerMP) player;
+			playerMP.addChatMessage(new ChatComponentText(message));
+		}
+	}
+
+	private void displayTitleToAll(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+		if (this.worldObj.isRemote) return;
+		for (EntityPlayer player : this.worldObj.playerEntities) {
+			EntityPlayerMP playerMP = (EntityPlayerMP) player;
+			playerMP.playerNetServerHandler.sendPacket(new S45PacketTitle(fadeIn, stay, fadeOut));
+			playerMP.playerNetServerHandler.sendPacket(new S45PacketTitle(S45PacketTitle.Type.TITLE, new ChatComponentText(title)));
+			playerMP.playerNetServerHandler.sendPacket(new S45PacketTitle(S45PacketTitle.Type.SUBTITLE, new ChatComponentText(subtitle)));
+		}
+	}
+
+	@Override
+	public boolean canBePushed() {
+		return this.getInvulTime() <= 0 && super.canBePushed();
+	}
+
+	@Override
+	public AxisAlignedBB getCollisionBoundingBox() {
+		return this.isArmored() ? this.getEntityBoundingBox() : super.getCollisionBoundingBox();
 	}
 }

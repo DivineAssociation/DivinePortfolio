@@ -127,7 +127,7 @@ public abstract class Entity implements ICommandSender {
 	protected boolean inWater;
 	public int hurtResistantTime;
 	protected boolean firstUpdate;
-	protected boolean isImmuneToFire;
+	public boolean isImmuneToFire;
 	protected DataWatcher dataWatcher;
 	private double entityRiderPitchDelta;
 	private double entityRiderYawDelta;

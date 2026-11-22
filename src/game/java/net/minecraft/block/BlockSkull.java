@@ -64,7 +64,7 @@ public class BlockSkull extends BlockContainer {
 		public boolean apply(BlockWorldState blockworldstate) {
 			return blockworldstate.getBlockState() != null && blockworldstate.getBlockState().getBlock() == Blocks.skull
 					&& blockworldstate.getTileEntity() instanceof TileEntitySkull
-					&& ((TileEntitySkull) blockworldstate.getTileEntity()).getSkullType() == 1;
+					&& ((TileEntitySkull) blockworldstate.getTileEntity()).getSkullType() != 3;
 		}
 	};
 	private BlockPattern witherBasePattern;
@@ -196,12 +196,12 @@ public class BlockSkull extends BlockContainer {
 	}
 
 	public boolean canDispenserPlace(World worldIn, BlockPos pos, ItemStack stack) {
-		return stack.getMetadata() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL
+		return stack.getMetadata() != 3 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL
 				&& !worldIn.isRemote ? this.getWitherBasePattern().match(worldIn, pos) != null : false;
 	}
 
 	public void checkWitherSpawn(World worldIn, BlockPos pos, TileEntitySkull te) {
-		if (te.getSkullType() == 1 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL
+		if (te.getSkullType() != 3 && pos.getY() >= 2 && worldIn.getDifficulty() != EnumDifficulty.PEACEFUL
 				&& !worldIn.isRemote) {
 			BlockPattern blockpattern = this.getWitherPattern();
 			BlockPattern.PatternHelper blockpattern$patternhelper = blockpattern.match(worldIn, pos);

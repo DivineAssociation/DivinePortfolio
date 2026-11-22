@@ -48,6 +48,9 @@ public class RenderWither extends RenderLiving<EntityWither> {
 	 */
 	public void doRender(EntityWither entitywither, double d0, double d1, double d2, float f, float f1) {
 		BossStatus.setBossStatus(entitywither, true);
+		if (entitywither.getInvulTime() > 0) {
+			return;
+		}
 		super.doRender(entitywither, d0, d1, d2, f, f1);
 	}
 
@@ -66,12 +69,17 @@ public class RenderWither extends RenderLiving<EntityWither> {
 	 * partialTickTime
 	 */
 	protected void preRenderCallback(EntityWither entitywither, float f) {
-		float f1 = 2.0F;
-		int i = entitywither.getInvulTime();
+		float f1 = 3.0F;
+		/*int i = entitywither.getInvulTime();
 		if (i > 0) {
-			f1 -= ((float) i - f) / 220.0F * 0.5F;
-		}
+			f1 -= ((float) i - f) / (float) EntityWither.CHARGEUP_TIME * 0.5F;
+		}*/
 
 		GlStateManager.scale(f1, f1, f1);
+	}
+
+	@Override
+	protected void rotateCorpse(EntityWither wither, float var2, float f, float f1) {
+		/*GlStateManager.rotate(180.0F - f, 0.0F, 1.0F, 0.0F);*/
 	}
 }
